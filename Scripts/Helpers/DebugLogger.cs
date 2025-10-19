@@ -22,20 +22,11 @@ namespace NamPhuThuy.Common
 
         #region Log Error
 
-        public static void LogError(string content, Color color, bool setBold = false)
+        public static void LogError(string message, Color color = default, bool setBold = false, Object context = null)
         {
             if (!enableLog)
                 return;
-            Debug.LogError(ColorizedText(content, color, setBold));
-            return;
-        }
-        
-        public static void LogError(string content, bool setBold = false)
-        {
-            if (!enableLog)
-                return;
-            Debug.LogError(ColorizedText(content, setBold));
-            return;
+            Debug.LogError(ColorizedText(message, color, setBold), context);
         }
         
         /// <summary>
@@ -48,10 +39,7 @@ namespace NamPhuThuy.Common
         
             if (condition)
             {
-                if (color == default)
-                    LogError(content, setBold);
-                else
-                    LogError(content, color, setBold);
+                LogError(content, color, setBold);
             }
         }
 
@@ -59,19 +47,11 @@ namespace NamPhuThuy.Common
 
         #region Log Warning
         
-        public static void LogWarning(string content, Color color, bool setBold = false)
+        public static void LogWarning(string content, Color color = default, bool setBold = false)
         {
             if (!enableLog)
                 return;
             Debug.LogWarning(ColorizedText(content, color, setBold));
-            return;
-        }
-        
-        public static void LogWarning(string content, bool setBold = false)
-        {
-            if (!enableLog)
-                return;
-            Debug.LogWarning(ColorizedText(content, setBold));
             return;
         }
 
@@ -85,32 +65,13 @@ namespace NamPhuThuy.Common
         
             if (condition)
             {
-                if (color == default)
-                    LogWarning(content, setBold);
-                else
-                    LogWarning(content, color, setBold);
+                LogWarning(content, color, setBold);
             }
         }
         #endregion
         
         #region Log 
 
-        public static void Log(string content, Color color, bool setBold = false, Object context = null)
-        {
-            if (!enableLog)
-                return;
-            Debug.Log(ColorizedText(content, color, setBold), context: context);
-            return;
-        }
-        
-        public static void Log(string content, bool setBold = false)
-        {
-            if (!enableLog)
-                return;
-            Debug.Log(ColorizedText(content, setBold));
-            return;
-        }
-        
         /// <summary>
         /// Log only if condition is true
         /// </summary>
@@ -121,10 +82,7 @@ namespace NamPhuThuy.Common
         
             if (condition)
             {
-                if (color == default)
-                    Log(content, setBold);
-                else
-                    Log(content, color, setBold);
+                Log(message:content, color:color, setBold:setBold);
             }
         }
         
@@ -134,17 +92,23 @@ namespace NamPhuThuy.Common
             Debug.Log(ColorizedText($"{frameInfo} - {content}", color, setBold));
         }
         
-        public static void LogSimple(
+        public static void Log(
             [CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
-            , [CallerFilePath] string filePath = "", string message = "", Color color = default, Object context = null
+            , [CallerFilePath] string filePath = "", string message = "", Color color = default, Object context = null, bool setBold = false
             /*, [CallerArgumentExpression("message")] string expression = ""*/
         )
         {
+            if (!enableLog)
+                return;
+            
             string className = Path.GetFileNameWithoutExtension(filePath);
 
             Color currentColor = color == default ? Color.cyan : color;
-            Log($"{className}().{memberName}()::{line}: {message}", currentColor, context: context);
+            string resMessage = $"{className}().{memberName}()::{line}: {message}";
+            
+            Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
+            
             /*Can replace UnityEngine.Debug.Log with any logging API you want
 
             Usage is simple: just put a LogCaller(); at any line you want. The compiler will pass in the 3 parameters for you.*/
@@ -289,6 +253,9 @@ namespace NamPhuThuy.Common
         
         public static string ColorizedText(string content, Color color, bool setBold = false)
         {
+            if (color == default)
+                color = Color.cyan;
+            
             if (setBold)
                 return $"<b><color=#{ColorUtility.ToHtmlStringRGB(color)}>{content}</color></b>";
             return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{content}</color>";
