@@ -47,11 +47,11 @@ namespace NamPhuThuy.Common
 
         #region Log Warning
         
-        public static void LogWarning(string content, Color color = default, bool setBold = false)
+        public static void LogWarning(string message, Color color = default, bool setBold = false, Object context = null)
         {
             if (!enableLog)
                 return;
-            Debug.LogWarning(ColorizedText(content, color, setBold));
+            Debug.LogWarning(ColorizedText(message, color, setBold), context);
             return;
         }
 
