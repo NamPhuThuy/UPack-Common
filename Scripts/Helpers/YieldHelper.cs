@@ -44,7 +44,7 @@ namespace NamPhuThuy.Common
             get { return _fixedUpdate; }
         }
 
-        public static WaitForSeconds Get(float seconds)
+        public static WaitForSeconds WaitForSeconds(float seconds)
         {
             if (!_timeInterval.ContainsKey(seconds))
                 _timeInterval.Add(seconds, new WaitForSeconds(seconds));
