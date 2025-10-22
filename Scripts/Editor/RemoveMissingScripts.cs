@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace NamPhuThuy
 {
+#if UNITY_EDITOR
     public class RemoveMissingScripts : MonoBehaviour
     {
         [MenuItem("GameObject/Remove Missing Scripts")]
@@ -16,5 +17,6 @@ namespace NamPhuThuy
             Debug.Log($"Removed {count} missing scripts");
         }
     }
+#endif
 
 }
