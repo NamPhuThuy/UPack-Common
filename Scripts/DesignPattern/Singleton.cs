@@ -52,7 +52,7 @@ namespace NamPhuThuy.Common
             OnInitialization();
         }
         
-        public virtual void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _instance = null;
             OnExtinction();
