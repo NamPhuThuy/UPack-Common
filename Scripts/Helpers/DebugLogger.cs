@@ -115,6 +115,16 @@ namespace NamPhuThuy.Common
 
             Usage is simple: just put a LogCaller(); at any line you want. The compiler will pass in the 3 parameters for you.*/
         }
+
+        public static void LogWithoutHeader(string message = "", Color color = default, Object context = null,
+            bool setBold = false)
+        {
+            if (!enableLog)
+                return;
+            
+            Color currentColor = color == default ? Color.cyan : color;
+            Debug.Log(ColorizedText(message, currentColor, setBold), context: context);
+        }
         
         
 
