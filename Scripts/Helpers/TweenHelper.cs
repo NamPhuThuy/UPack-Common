@@ -91,5 +91,26 @@ namespace NamPhuThuy.Common
         }
 
         #endregion
+        
+        /// <summary>
+        /// Kill all tweens in the list. Optionally complete them and clear the list.
+        /// </summary>
+        public static void StopAllTweens(IList<Tween> tweens, bool complete = false, bool clearList = true)
+        {
+            if (tweens == null) return;
+
+            for (int i = 0; i < tweens.Count; i++)
+            {
+                var t = tweens[i];
+                if (t == null) continue;
+                if (t.IsActive())
+                    t.Kill(complete);
+                else
+                    t.Kill(complete);
+            }
+
+            if (clearList)
+                tweens.Clear();
+        }
     }
 }
