@@ -39,7 +39,7 @@ namespace NamPhuThuy.Common
             }
         }
         
-        protected void Awake()
+        protected virtual void Awake()
         {
             // Debug.Log($"Singleton<{typeof(T).Name}> Awake");
             if (!_instance)
