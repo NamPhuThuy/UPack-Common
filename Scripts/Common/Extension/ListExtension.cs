@@ -218,5 +218,39 @@ namespace NamPhuThuy.Common
                 yield return list[i];
             }
         }
+        
+        /// <summary>
+        /// Creates a deep copy of the list. It handles both value types and reference types
+        /// by casting to ICloneable and creating new instances.
+        /// </summary>
+        public static List<T> DeepCopy<T>(this List<T> list)
+        {
+            List<T> newList = new List<T>();
+
+            if (typeof(T).IsValueType)
+            {
+                return new List<T>(list);
+            }
+            
+            // If type T implements the ICloneable interface.
+            if (typeof(ICloneable).IsAssignableFrom(typeof(T)))
+            {
+                foreach (var item in list)
+                {
+                    if (item == null)
+                    {
+                        newList.Add(default(T));
+                    }
+                    else
+                    {
+                        newList.Add((T)((ICloneable)item).Clone());
+                    }
+                }
+                return newList;
+            }
+            
+            // Shallow copy for non-ICloneable reference types
+            return new List<T>(list);
+        }
     }
 }

@@ -1,4 +1,3 @@
-using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,28 +11,18 @@ namespace NamPhuThuy.Common
     {
         public bool Active = true;
 
-        [OnValueChanged("Sort")]
         [SerializeField] SortAnchor sortMode;
 
-        [OnValueChanged("Sort")]
         [SerializeField] bool sortByX;
 
-        [ShowIf("sortByX")]
-        [OnValueChanged("Sort")]
         [SerializeField] float distanceBetweenX;
 
-        [OnValueChanged("Sort")]
         [SerializeField] bool sortByY;
 
-        [ShowIf("sortByY")]
-        [OnValueChanged("Sort")]
         [SerializeField] float distanceBetweenY;
 
-        [OnValueChanged("Sort")]
         [SerializeField] bool sortByZ;
 
-        [ShowIf("sortByZ")]
-        [OnValueChanged("Sort")]
         [SerializeField] float distanceBetweenZ;
 
         public void Sort()
@@ -53,7 +42,6 @@ namespace NamPhuThuy.Common
         }
 #if UNITY_EDITOR
 
-        [Button]
         public void SortChild()
         {
             if (!Active) return;
@@ -67,7 +55,6 @@ namespace NamPhuThuy.Common
             AssetDatabase.SaveAssets();
         }
 
-        [Button]
         public void SortByName()
         {
             var childs = transform.ChildsList().OrderBy(x => x.name);
