@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NamPhuThuy.Common
@@ -132,6 +133,126 @@ namespace NamPhuThuy.Common
         {
             return UnityEngine.Random.Range(min, max);
         }
+        
+        
+        /// <summary>
+        /// Picks 'count' distinct random elements from source (no duplicates).
+        /// Throws if count &gt; source.Count unless allowLess = true (then it clamps).
+        /// </summary>
+        public static List<T> PickRandomDistinct<T>(IList<T> source, int count, bool allowLess = false, System.Random rng = null)
+        {
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            int n = source.Count;
+            if (count < 0) throw new System.ArgumentOutOfRangeException(nameof(count));
+            if (count > n)
+            {
+                if (allowLess) count = n;
+                else throw new System.ArgumentException("count greater than source size.");
+            }
+
+            rng ??= mRandom;
+
+            // Indices array
+            int[] indices = new int[n];
+            for (int i = 0; i < n; i++) indices[i] = i;
+
+            // Partial Fisher-Yates
+            for (int i = 0; i < count; i++)
+            {
+                int r = rng.Next(i, n); // inclusive i, exclusive n
+                (indices[i], indices[r]) = (indices[r], indices[i]);
+            }
+
+            var result = new List<T>(count);
+            for (int i = 0; i < count; i++)
+                result.Add(source[indices[i]]);
+            return result;
+        }
+
+        /// <summary>
+        /// Picks 'count' random elements allowing duplicates (with replacement).
+        /// Returns empty list if source is null or empty.
+        /// </summary>
+        public static List<T> PickRandomWithReplacement<T>(IList<T> source, int count, System.Random rng = null)
+        {
+            var result = new List<T>(count);
+            if (source == null || source.Count == 0 || count <= 0) return result;
+
+            rng ??= mRandom;
+            int n = source.Count;
+            for (int i = 0; i < count; i++)
+            {
+                int idx = rng.Next(0, n);
+                result.Add(source[idx]);
+            }
+            return result;
+        }
+        
+        
+    /// <summary>
+    /// Picks 'count' random ints in [minInclusive, maxInclusive] (with replacement, duplicates possible).
+    /// Returns empty list if count <= 0 or range invalid.
+    /// </summary>
+    public static List<int> PickRandomRange(int minInclusive, int maxInclusive, int count, System.Random rng = null)
+    {
+        var result = new List<int>(count);
+        if (count <= 0) return result;
+        if (maxInclusive < minInclusive) return result;
+
+        rng ??= mRandom;
+        int span = maxInclusive - minInclusive + 1;
+        for (int i = 0; i < count; i++)
+        {
+            int v = rng.Next(span) + minInclusive; // Next(span) gives [0, span)
+            result.Add(v);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Picks 'count' distinct random ints in [minInclusive, maxInclusive] (no duplicates).
+    /// Throws if count > rangeSize unless allowLess = true (then clamps to rangeSize).
+    /// </summary>
+    public static List<int> PickRandomRangeDistinct(int minInclusive, int maxInclusive, int count, bool allowLess = false, System.Random rng = null)
+    {
+        if (maxInclusive < minInclusive) throw new System.ArgumentException("Invalid range.");
+        if (count < 0) throw new System.ArgumentOutOfRangeException(nameof(count));
+
+        int rangeSize = maxInclusive - minInclusive + 1;
+        if (count > rangeSize)
+        {
+            if (allowLess) count = rangeSize;
+            else throw new System.ArgumentException("count greater than range size.");
+        }
+
+        rng ??= mRandom;
+
+        // If we need most of the range, build array and partial shuffle (Fisher-Yates).
+        if (count > rangeSize / 2)
+        {
+            int[] arr = new int[rangeSize];
+            for (int i = 0; i < rangeSize; i++) arr[i] = minInclusive + i;
+            for (int i = 0; i < count; i++)
+            {
+                int r = rng.Next(i, rangeSize);
+                (arr[i], arr[r]) = (arr[r], arr[i]);
+            }
+            var result = new List<int>(count);
+            for (int i = 0; i < count; i++) result.Add(arr[i]);
+            return result;
+        }
+        else
+        {
+            // Need few values: use HashSet to avoid duplicates.
+            var set = new HashSet<int>();
+            while (set.Count < count)
+            {
+                int v = rng.Next(rangeSize) + minInclusive;
+                set.Add(v);
+            }
+            return new List<int>(set);
+        }
+    }
         #endregion
 
         #region Convert
