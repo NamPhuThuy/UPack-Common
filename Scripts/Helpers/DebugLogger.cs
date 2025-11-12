@@ -107,7 +107,11 @@ namespace NamPhuThuy.Common
             string className = Path.GetFileNameWithoutExtension(filePath);
 
             Color currentColor = color == default ? Color.cyan : color;
-            string resMessage = $"{className}().{memberName}: {message}";
+            
+            string classNameShort = className.Length > 6 ? className.Substring(0, 4) : className;
+            string memberNameShort = memberName.Length > 6 ? memberName.Substring(0, 4) : memberName;
+            
+            string resMessage = $"{classNameShort}().{memberNameShort}: {message}";
             
             Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
             
