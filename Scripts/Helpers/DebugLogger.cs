@@ -108,8 +108,8 @@ namespace NamPhuThuy.Common
 
             Color currentColor = color == default ? Color.cyan : color;
             
-            string classNameShort = className.Length > 6 ? className.Substring(0, 4) : className;
-            string memberNameShort = memberName.Length > 6 ? memberName.Substring(0, 4) : memberName;
+            string classNameShort = className.Length > 6 ? className.Substring(0, 6) : className;
+            string memberNameShort = memberName.Length > 6 ? memberName.Substring(0, 6) : memberName;
             
             string resMessage = $"{classNameShort}().{memberNameShort}: {message}";
             
