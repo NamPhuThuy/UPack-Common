@@ -14,7 +14,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Shuffles the list in place using the Fisher–Yates algorithm.
         /// </summary>
-        public static void FisherYatesShuffle<T>(this IList<T> list)
+        public static void FisherYatesShuffle<T>(this List<T> list)
         {
             for (int i = list.Count - 1; i > 0; i--)
             {
@@ -26,7 +26,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Returns a new shuffled copy of the list, leaving the original untouched.
         /// </summary>
-        public static List<T> FisherYatesShuffled<T>(this IList<T> list)
+        public static List<T> FisherYatesShuffled<T>(this List<T> list)
         {
             var copy = new List<T>(list);
             copy.FisherYatesShuffle();
