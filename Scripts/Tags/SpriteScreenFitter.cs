@@ -1,23 +1,31 @@
 using System;
-
+using DG.Tweening;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-
 namespace NamPhuThuy.Common
 {
     [RequireComponent(typeof(SpriteRenderer))]
-
     public class SpriteScreenFitter : MonoBehaviour
     {
+        public enum FitMode
+        {
+            MaintainAspectRatio,
+            StretchToFit
+        }
+
         #region MonoBehaviour Callbacks
-        
+
         [Header("Components")]
         [SerializeField] private Camera currentCamera;
         public Camera CurrentCamera => currentCamera;
+
+        [Header("Settings")]
+        [SerializeField] private FitMode fitMode = FitMode.MaintainAspectRatio;
+        public FitMode CurrentFitMode => fitMode;
 
         private void Awake()
         {
@@ -25,10 +33,7 @@ namespace NamPhuThuy.Common
             {
                 currentCamera = Camera.main;
             }
-        }
-
-        private void Start()
-        {
+            transform.DOKill(); // Kills all DOTween animations on this transform
             ScaleSpriteToScreen();
         }
 
@@ -47,7 +52,6 @@ namespace NamPhuThuy.Common
                 return;
             }
 
-            // Maintain aspect ratio 
             Vector2 spriteSize = sr.sprite.bounds.size;
 
             float screenHeight = currentCamera.orthographicSize * 2f;
@@ -56,9 +60,17 @@ namespace NamPhuThuy.Common
             float scaleX = screenWidth / spriteSize.x;
             float scaleY = screenHeight / spriteSize.y;
 
-            float finalScale = Mathf.Max(scaleX, scaleY);
-
-            transform.localScale = new Vector3(finalScale, finalScale, 1f);
+            if (fitMode == FitMode.MaintainAspectRatio)
+            {
+                // Use the larger scale to ensure full coverage
+                float finalScale = Mathf.Max(scaleX, scaleY);
+                transform.localScale = new Vector3(finalScale, finalScale, 1f);
+            }
+            else // StretchToFit
+            {
+                // Use independent X and Y scales to stretch the sprite
+                transform.localScale = new Vector3(scaleX, scaleY, 1f);
+            }
         }
 
         #endregion
@@ -69,12 +81,14 @@ namespace NamPhuThuy.Common
     public class SpriteAutoScalerEditor : Editor
     {
         private SerializedProperty currentCameraProperty;
+        private SerializedProperty fitModeProperty;
         private SpriteScreenFitter _script;
 
         private void OnEnable()
         {
             _script = (SpriteScreenFitter)target;
             currentCameraProperty = serializedObject.FindProperty("currentCamera");
+            fitModeProperty = serializedObject.FindProperty("fitMode");
         }
 
         public override void OnInspectorGUI()
@@ -88,6 +102,19 @@ namespace NamPhuThuy.Common
                 EditorGUILayout.HelpBox("Camera is not assigned. Will use Camera.main at runtime.", MessageType.Info);
             }
 
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(fitModeProperty);
+
+            if (fitModeProperty.enumValueIndex == (int)SpriteScreenFitter.FitMode.MaintainAspectRatio)
+            {
+                EditorGUILayout.HelpBox("Sprite will maintain aspect ratio and cover the entire screen. May crop edges.", MessageType.Info);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Sprite will stretch to exactly fit the screen. May appear distorted.", MessageType.Warning);
+            }
+
+            EditorGUILayout.Space();
             if (GUILayout.Button("Preview Scale"))
             {
                 SpriteScreenFitter scaler = (SpriteScreenFitter)target;
