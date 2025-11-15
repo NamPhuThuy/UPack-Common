@@ -217,12 +217,16 @@ namespace NamPhuThuy
             sb.AppendLine("        // Sorting Layer names");
             foreach (var l in layers)
             {
+                if (string.IsNullOrEmpty(l.name))
+                    continue;
                 sb.AppendLine($"        public const string {ToConstName(l.name)} = \"{l.name}\";");
             }
             sb.AppendLine();
             sb.AppendLine("        // Sorting Layer IDs");
             foreach (var l in layers)
             {
+                if (string.IsNullOrEmpty(l.name))
+                    continue;
                 sb.AppendLine($"        public const int {ToConstName(l.name)}_ID = {l.id};");
             }
 
