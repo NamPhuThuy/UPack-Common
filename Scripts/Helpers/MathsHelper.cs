@@ -301,6 +301,14 @@ namespace NamPhuThuy.Common
             return _randState.Seed = x;
         }
 
+
+        /// <summary>
+        /// Returns a pseudo-random integer in the inclusive range [min, max]
+        /// using the internal XOR-based random generator.
+        /// </summary>
+        /// <param name="min">Minimum value of the range (inclusive).</param>
+        /// <param name="max">Maximum value of the range (inclusive).</param>
+        /// <returns>A pseudo-random integer between min and max (inclusive).</returns>
         public static int RandRange(int min, int max)
         {
             return min + (int)(RandXOR() % (ulong)(max - min + 1));
