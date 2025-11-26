@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 //Use backtracking to show the path of the current clicked UIElement
-namespace NamPhuThuy
+namespace NamPhuThuy.Common
 {
     public class UIClickDetector : MonoBehaviour
     {
@@ -23,7 +23,7 @@ namespace NamPhuThuy
                 {
                     GameObject clickedObject = results[0].gameObject;
                     string path = GetHierarchyPath(clickedObject.transform);
-                    Debug.Log($"TNam - Path: {path}");
+                    DebugLogger.Log(message:$"Path: {path}", context:clickedObject);
                 }
             }
         }
