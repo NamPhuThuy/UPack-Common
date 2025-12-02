@@ -171,13 +171,13 @@ namespace NamPhuThuy.Common
             transform.localScale = scale;
         
             // Debug info
-            DebugLogger.Log(message:$"Sprite PPU: {sprite.pixelsPerUnit}");
+            /*DebugLogger.Log(message:$"Sprite PPU: {sprite.pixelsPerUnit}");
             Debug.Log($"Sprite Size: {sprite.rect.width}x{sprite.rect.height} pixels");
             DebugLogger.Log(message:$"spriteWidth: {spriteWidth}, spriteHeight: {spriteHeight}", context:this);
             DebugLogger.Log(message:$"targetWidth: {targetWidth}, targetHeight: {targetHeight}", context:this);
             Debug.Log($"Camera View: {cameraWidth}x{cameraHeight} units");
             DebugLogger.Log(message:$"Applied Scale: {scale}");
-            Debug.Log($"Final World Size: {spriteWidth * scale.x}x{spriteHeight * scale.y} units");
+            Debug.Log($"Final World Size: {spriteWidth * scale.x}x{spriteHeight * scale.y} units");*/
         }
 
         /// <summary>
