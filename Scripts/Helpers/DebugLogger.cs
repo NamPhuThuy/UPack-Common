@@ -95,6 +95,7 @@ namespace NamPhuThuy.Common
             Debug.Log(ColorizedText($"{frameInfo} - {content}", color, setBold));
         }
         
+        static int limitChars = 12;
         public static void Log(
             [CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
@@ -108,7 +109,7 @@ namespace NamPhuThuy.Common
             string className = Path.GetFileNameWithoutExtension(filePath);
 
             Color currentColor = color == default ? Color.cyan : color;
-            int limitChars = 8;
+            
             
             string classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
             string memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
