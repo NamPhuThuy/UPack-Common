@@ -13,7 +13,7 @@ namespace NamPhuThuy.EditorTools
 {
     public class SceneSwitcher : Editor
     {
-        private const string SWITCH_SCENE_MENU_NAME = "Tools/TrinhNam/Switch Scene";
+        private const string SWITCH_SCENE_MENU_NAME = "NamPhuThuy/Common/Scene Switcher";
         private const string ALT = "&";
 
         #region LoadSceneShortCut

@@ -23,7 +23,7 @@ namespace NamPhuThuy
         private string _namespace;
         private string _outFolder;
 
-        [MenuItem("Tools/TrinhNam/Const Generator")]
+        [MenuItem("NamPhuThuy/Common/Const Generator")]
         public static void ShowWindow()
         {
             var w = GetWindow<ConstGenerator>("Const Generator");
