@@ -1,8 +1,11 @@
 using System.IO;
 using UnityEngine;
+
+#if UNITY_EDITOR
+
 using UnityEditor;
 
-namespace NamPhuThuy.EditorTools
+namespace NamPhuThuy.Common
 {
     public class AssetNameSwapper : EditorWindow
     {
@@ -200,3 +203,6 @@ namespace NamPhuThuy.EditorTools
         #endregion
     }
 }
+
+
+#endif
