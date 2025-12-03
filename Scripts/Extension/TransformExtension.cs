@@ -6,9 +6,8 @@ namespace NamPhuThuy.Common
 {
     public static class TransformExtension
     {
-        
+        #region Position Helpers
 
-        //local pos
         public static void SetLocalPositionX(this Transform trans, float value)
         {
             var v = trans.localPosition;
@@ -30,7 +29,6 @@ namespace NamPhuThuy.Common
             trans.localPosition = v;
         }
 
-        // pos
         public static void SetPositionX(this Transform trans, float value)
         {
             var v = trans.position;
@@ -51,8 +49,10 @@ namespace NamPhuThuy.Common
             v.z = value;
             trans.position = v;
         }
+        #endregion
 
-        // localscale
+        #region Scale Helpers
+
         public static void SetLocalScaleX(this Transform trans, float value)
         {
             var v = trans.localScale;
@@ -74,7 +74,10 @@ namespace NamPhuThuy.Common
             trans.localScale = v;
         }
 
-        // rotation
+        #endregion
+
+        #region Rotation Helpers
+
         public static void SetEulerAngleZ(this Transform trans, float value)
         {
             var v = trans.eulerAngles;
@@ -121,114 +124,10 @@ namespace NamPhuThuy.Common
             v.z = value;
             trans.localEulerAngles = v;
         }
-        
-        public static float TotalNavmeshPathMagnitude(this Transform target, Vector3 destination)
-        {
-            UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
-            UnityEngine.AI.NavMesh.CalculatePath(target.position, destination, UnityEngine.AI.NavMesh.AllAreas,
-                path);
-            float total = 0;
-            for (int i = 1; i < path.corners.Length; i++)
-            {
-                total += (path.corners[i] - path.corners[i - 1]).magnitude;
-            }
 
-            return total;
-        }
+        #endregion
 
-        public static List<GameObject> FindObjectsByName(this Transform transform, string name)
-        {
-            List<GameObject> taggedGameObjects = new List<GameObject>();
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Transform child = transform.GetChild(i);
-                if (child.name.Equals(name))
-                {
-                    taggedGameObjects.Add(child.gameObject);
-                }
-
-                if (child.childCount > 0)
-                {
-                    taggedGameObjects.AddRange(FindObjectsByName(child, name));
-                }
-            }
-
-            return taggedGameObjects;
-        }
-
-        public static List<GameObject> FindObjectsByNameContain(this Transform transform, List<string> names)
-        {
-            List<GameObject> taggedGameObjects = new List<GameObject>();
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Transform child = transform.GetChild(i);
-                bool check = false;
-                foreach (var item in names)
-                {
-                    if (child.name.Contains(item))
-                    {
-                        check = true;
-                        break;
-                    }
-                }
-
-                if (check)
-                {
-                    taggedGameObjects.Add(child.gameObject);
-                }
-
-                if (child.childCount > 0)
-                {
-                    taggedGameObjects.AddRange(FindObjectsByNameContain(child, names));
-                }
-            }
-
-            return taggedGameObjects;
-        }
-
-        public static List<GameObject> FindObjectsByNameContain(this Transform transform, List<string> names,
-            List<string> exceptNames)
-        {
-            List<GameObject> taggedGameObjects = new List<GameObject>();
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Transform child = transform.GetChild(i);
-
-                bool check = false;
-                foreach (var item in names)
-                {
-                    if (child.name.Contains(item))
-                    {
-                        check = true;
-                        break;
-                    }
-                }
-
-                foreach (var item in exceptNames)
-                {
-                    if (child.name.Contains(item))
-                    {
-                        check = false;
-                        break;
-                    }
-                }
-
-                if (check)
-                {
-                    taggedGameObjects.Add(child.gameObject);
-                }
-
-                if (child.childCount > 0)
-                {
-                    taggedGameObjects.AddRange(FindObjectsByNameContain(child, names));
-                }
-            }
-
-            return taggedGameObjects;
-        }
+        #region Find Object Helpers
 
         public static List<GameObject> FindObjectsByNameContain(this Transform transform, string name)
         {
@@ -308,6 +207,10 @@ namespace NamPhuThuy.Common
             return null;
         }
 
+        #endregion
+
+        #region Children helpers
+        
         public static Queue<Transform> ChildsQueue(this Transform transform)
         {
             Queue<Transform> result = new Queue<Transform>();
@@ -332,87 +235,51 @@ namespace NamPhuThuy.Common
             return result;
         }
 
-        public static List<GameObject> FindObjectsWithTag(this Transform parent, string tag)
+        /// <summary>
+        /// Returns the index of this Transform among all its siblings that have component T.
+        /// Only siblings with component T are counted.
+        /// Returns -1 if this Transform has no parent or no component T.
+        /// </summary>
+        public static int GetSiblingIndexWithComponent<T>(this Transform transform) where T : Component
         {
-            List<GameObject> taggedGameObjects = new List<GameObject>();
+            var parent = transform.parent;
+            if (parent == null)
+            {
+                return -1;
+            }
 
+            // This object must also have T, otherwise it is not in the filtered set.
+            if (transform.GetComponent<T>() == null)
+            {
+                return -1;
+            }
+
+            int filteredIndex = 0;
             for (int i = 0; i < parent.childCount; i++)
             {
-                Transform child = parent.GetChild(i);
-                if (child.CompareTag(tag))
-                {
-                    taggedGameObjects.Add(child.gameObject);
-                }
+                var child = parent.GetChild(i);
 
-                if (child.childCount > 0)
+                // Count only children that have T
+                if (child.GetComponent<T>() != null)
                 {
-                    taggedGameObjects.AddRange(FindObjectsWithTag(child, tag));
+                    // When we reach `transform`, return the current filtered index
+                    if (child == transform)
+                    {
+                        return filteredIndex;
+                    }
+
+                    filteredIndex++;
                 }
             }
 
-            return taggedGameObjects;
+            return -1;
         }
-
-        public static List<Transform> FindTransformsWithTag(this Transform parent, string tag)
-        {
-            List<Transform> taggedGameObjects = new List<Transform>();
-
-            for (int i = 0; i < parent.childCount; i++)
-            {
-                Transform child = parent.GetChild(i);
-                if (child.CompareTag(tag))
-                {
-                    taggedGameObjects.Add(child.transform);
-                }
-
-                if (child.childCount > 0)
-                {
-                    taggedGameObjects.AddRange(FindTransformsWithTag(child, tag));
-                }
-            }
-
-            return taggedGameObjects;
-        }
-
+        
+        #endregion
+        
         public static bool IsInRange(this Transform transform, Vector3 target, float range)
         {
             return transform.position.IsInRange(target, range);
-        }
-
-        public static List<Vector3> ToVectors(this List<Transform> transform)
-        {
-            List<Vector3> points = new List<Vector3>();
-            foreach (var item in transform)
-            {
-                if (item)
-                {
-                    points.Add(item.position);
-                }
-            }
-
-            return points;
-        }
-
-        public static List<Transform> ToTransforms(this List<GameObject> transform)
-        {
-            List<Transform> points = new List<Transform>();
-            foreach (var item in transform)
-            {
-                if (item)
-                {
-                    points.Add(item.transform);
-                }
-            }
-
-            return points;
-        }
-
-        public static IEnumerable<Transform> ToTransforms<T>(this IEnumerable<T> list) where T : MonoBehaviour
-        {
-            foreach (var item in list)
-            {
-                yield return item.transform;
-            }
         }
 
         public static List<Transform> OutRange(this List<Transform> transforms, Vector3 position, float distance)
@@ -448,6 +315,8 @@ namespace NamPhuThuy.Common
             return result;
         }
 
+        #region Character Look
+
         public static void CharacterLook(this Transform transform, Transform target)
         {
             transform.rotation = transform.GetCharacterLookRotation(target);
@@ -469,6 +338,17 @@ namespace NamPhuThuy.Common
             return targetRotation;
         }
 
+        #endregion
+
+        #region Nearest / Furthest
+        
+        /// <summary>
+        /// Find the nearest Component of type T from the list to the target position.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="target"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T Nearest<T>(this IEnumerable<T> list, Vector3 target) where T : Component
         {
             T best = null;
@@ -502,5 +382,8 @@ namespace NamPhuThuy.Common
 
             return best;
         }
+        
+        #endregion
+        
     }
 }

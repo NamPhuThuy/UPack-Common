@@ -143,7 +143,7 @@ namespace NamPhuThuy.Common
 
         public void ScaleSpriteToScreen()
         {
-            DebugLogger.Log(context:this);
+            // DebugLogger.Log(context:this);
             transform.DOKill(); // Kills all DOTween animations on this transform
             
             if (!currentCamera.orthographic)
