@@ -96,6 +96,7 @@ namespace NamPhuThuy.Common
         }
         
         static int limitChars = 12;
+        static bool isLimitChars = false;
         public static void Log(
             [CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
@@ -111,8 +112,19 @@ namespace NamPhuThuy.Common
             Color currentColor = color == default ? Color.cyan : color;
             
             
-            string classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
-            string memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
+            string classNameShort;
+            string memberNameShort;
+
+            if (isLimitChars)
+            {
+                classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
+                memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
+            }
+            else
+            {
+                classNameShort = className;
+                memberNameShort = memberName;
+            }
             
             string resMessage = $"{classNameShort}().{memberNameShort}: {message}";
             
