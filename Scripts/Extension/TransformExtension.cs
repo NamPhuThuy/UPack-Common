@@ -275,6 +275,27 @@ namespace NamPhuThuy.Common
             return -1;
         }
         
+        public static T[] GetComponentsArrayFromAllChildren<T>(this Transform parent) where T : Component
+        {
+            List<T> components = new List<T>();
+            GetComponentsFromAllChildrenRecursive(parent, components);
+            return components.ToArray();
+        }
+
+        private static void GetComponentsFromAllChildrenRecursive<T>(Transform parent, List<T> components) where T : Component
+        {
+            T component = parent.GetComponent<T>();
+            if (component != null)
+            {
+                components.Add(component);
+            }
+
+            foreach (Transform child in parent)
+            {
+                GetComponentsFromAllChildrenRecursive<T>(child, components);
+            }
+        }
+        
         #endregion
         
         public static bool IsInRange(this Transform transform, Vector3 target, float range)
