@@ -11,6 +11,7 @@ using UnityEngine;
  - 
  */
 
+// Icon pool: ❌ 🔍 ⚠️📦✅🎯🐝📂🐸 🎮 🔧 ⚠️ ❌ ✅ 💡 🚀 ⭐ 🎯 🔥 💰 🏆 👾 🎲 📊 🔔 ⚡ 🛡️ ⚔️ 🎪 🎨 🔊 📱 🐛 ⏰ 💀 ❤️ 🎵 📦 🗝️ 🌟 🏃 💥 🎁 📍 🔒 🔓 ⏸️ ▶️ ⏹️
 namespace NamPhuThuy.Common
 {
     /// <summary>
@@ -94,9 +95,41 @@ namespace NamPhuThuy.Common
             string frameInfo = $"[Frame {Time.frameCount}] ";
             Debug.Log(ColorizedText($"{frameInfo} - {content}", color, setBold));
         }
+
+        public static void LogFrog([CallerLineNumber] int line = 0
+            , [CallerMemberName] string memberName = ""
+            , [CallerFilePath] string filePath = "", string message = "", Color color = default, Object context = null, bool setBold = false)
+        {
+            if (!enableLog)
+                return;
+            
+            string className = Path.GetFileNameWithoutExtension(filePath);
+
+            Color currentColor = color == default ? Color.cyan : color;
+            
+            
+            string classNameShort;
+            string memberNameShort;
+
+            if (isLimitChars)
+            {
+                classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
+                memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
+            }
+            else
+            {
+                classNameShort = className;
+                memberNameShort = memberName;
+            }
+            
+            string resMessage = $"🐸{classNameShort}().{memberNameShort}: {message}";
+            
+            Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
+        }
         
         static int limitChars = 12;
         static bool isLimitChars = false;
+            
         public static void Log(
             [CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
