@@ -23,7 +23,7 @@ namespace NamPhuThuy
         private string _namespace;
         private string _outFolder;
 
-        [MenuItem("NamPhuThuy/Common/Const Generator")]
+        [MenuItem("NamPhuThuy/Common/Window - Const Generator")]
         public static void ShowWindow()
         {
             var w = GetWindow<ConstGenerator>("Const Generator");

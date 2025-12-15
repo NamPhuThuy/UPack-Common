@@ -9,7 +9,7 @@ namespace NamPhuThuy.Common
 #if UNITY_EDITOR
     public class RemoveMissingScripts : MonoBehaviour
     {
-        [MenuItem("NamPhuThuy/Common/Remove Missing Scripts")]
+        [MenuItem("NamPhuThuy/Common/Command - Remove Missing Scripts")]
         public static void Remove()
         {
             var objs = Resources.FindObjectsOfTypeAll<GameObject>();

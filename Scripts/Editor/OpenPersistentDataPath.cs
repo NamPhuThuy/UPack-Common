@@ -7,7 +7,7 @@ using System.IO;
 
 public class OpenPersistentDataPath : EditorWindow
 {
-    [MenuItem("NamPhuThuy/Common/Open Persistent Data Path")]
+    [MenuItem("NamPhuThuy/Common/Command - Open Persistent Data Path")]
     static void RunOpenPersistentPath()
     {
         string path = Application.persistentDataPath;
