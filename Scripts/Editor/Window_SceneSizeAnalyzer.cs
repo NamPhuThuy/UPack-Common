@@ -1,5 +1,6 @@
 // File: `Assets/_Project/Code/UPack-Common/Scripts/Editor/Window_SceneSizeAnalyzer.cs`
 
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -317,3 +318,5 @@ public class Window_SceneSizeAnalyzer : EditorWindow
     }
     #endregion
 }
+
+#endif
