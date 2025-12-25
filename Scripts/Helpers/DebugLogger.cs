@@ -12,19 +12,96 @@ using UnityEngine;
  */
 
 // Icon pool: ❌ 🔍 ⚠️📦✅🎯🐝📂🐸 🎮 🔧 ⚠️ ❌ ✅ 💡 🚀 ⭐ 🎯 🔥 💰 🏆 👾 🎲 📊 🔔 ⚡ 🛡️ ⚔️ 🎪 🎨 🔊 📱 🐛 ⏰ 💀 ❤️ 🎵 📦 🗝️ 🌟 🏃 💥 🎁 📍 🔒 🔓 ⏸️ ▶️ ⏹️
+
+/* Icon pool
+ Solid shapes: ■ ● ⬛ ⬤ ◆ ⬟ ⬢ ⬣ ◼ ◾
+Triangles/arrows: ▶ ► ▸ ▴ ▾ ⯈ ⮞ ➤
+Blocks/bullets: ▪ • ‣ ∙ ◉ ◍ ◘
+Stars/sparks: ★ ✦ ✧ ✪ ✯ ✵ ✶
+Cross/check (bold look): ✖ ✕ ✗ ✔ ✓ ☑
+Math/other: ∎ ■ ⬛ ⦿ ⧈ ⬚
+*/
 namespace NamPhuThuy.Common
 {
     /// <summary>
     /// 
     /// </summary>
-    public static class DebugLogger
+    public static partial class DebugLogger
     {
         public static bool enableLog = true;
         public static readonly Color defaultColor = Color.cyan;
         public static readonly Color eventColor = Color.yellow;
         
+        [System.Flags]
+        public enum LogTag
+        {
+            None        = 0,
+            Inform      = 1 << 0,
+            NullInvalid = 1 << 1,
+            Event       = 1 << 2,
+            Warning     = 1 << 3,
+            Error       = 1 << 4,
+            Break       = 1 << 5,
+            Exception   = 1 << 6,
+            All         = ~0
+        }
+        public static LogTag enabledTags = LogTag.All;
+        private enum LogLevel { Log, Warning, Error }
 
-        #region Log Error
+        #region New
+
+        public static bool IsTagEnabled(LogTag tag)
+        {
+            if (tag == LogTag.None) return true;
+            return (enabledTags & tag) != 0;
+        }
+
+        public static void SetTagEnabled(LogTag tag, bool enabled)
+        {
+            if (enabled) enabledTags |= tag;
+            else enabledTags &= ~tag;
+        }
+        
+        private static void LogInternal(
+            LogLevel level,
+            LogTag tag,
+            string message,
+            Color color = default,
+            bool setBold = false,
+            Object context = null)
+        {
+            if (!enableLog) return;
+            if (!IsTagEnabled(tag)) return;
+
+            Color currentColor = color == default ? defaultColor : color;
+
+            string tagged = tag == LogTag.None ? message : $"[{tag}] {message}";
+            string formatted = ColorizedText(tagged, currentColor, setBold);
+
+            switch (level)
+            {
+                case LogLevel.Warning:
+                    Debug.LogWarning(formatted, context);
+                    break;
+                case LogLevel.Error:
+                    Debug.LogError(formatted, context);
+                    break;
+                default:
+                    Debug.Log(formatted, context);
+                    break;
+            }
+        }
+
+        private static string BuildHeader(string filePath, string memberName)
+        {
+            string className = Path.GetFileNameWithoutExtension(filePath);
+
+            return $"{className}().{memberName}";
+        }
+
+        #endregion
+        
+        #region ✧ Log Error
 
         public static void LogError(string message, Color color = default, bool setBold = false, Object context = null)
         {
@@ -49,7 +126,7 @@ namespace NamPhuThuy.Common
 
         #endregion
 
-        #region Log Warning
+        #region ✧ Log Warning
         
         public static void LogWarning(string message, Color color = default, bool setBold = false, Object context = null)
         {
@@ -74,7 +151,7 @@ namespace NamPhuThuy.Common
         }
         #endregion
         
-        #region Log 
+        #region ✧ Log 
 
         /// <summary>
         /// Log only if condition is true
@@ -107,28 +184,11 @@ namespace NamPhuThuy.Common
 
             Color currentColor = color == default ? Color.cyan : color;
             
-            
-            string classNameShort;
-            string memberNameShort;
-
-            if (isLimitChars)
-            {
-                classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
-                memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
-            }
-            else
-            {
-                classNameShort = className;
-                memberNameShort = memberName;
-            }
-            
-            string resMessage = $"🐸{classNameShort}().{memberNameShort}: {message}";
+            string resMessage = $"🐸{className}().{memberName}: {message}";
             
             Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
         }
         
-        static int limitChars = 12;
-        static bool isLimitChars = false;
             
         public static void Log(
             [CallerLineNumber] int line = 0
@@ -143,23 +203,9 @@ namespace NamPhuThuy.Common
             string className = Path.GetFileNameWithoutExtension(filePath);
 
             Color currentColor = color == default ? Color.cyan : color;
-            
-            
-            string classNameShort;
-            string memberNameShort;
 
-            if (isLimitChars)
-            {
-                classNameShort = className.Length > limitChars ? className.Substring(0, limitChars) : className;
-                memberNameShort = memberName.Length > limitChars ? memberName.Substring(0, limitChars) : memberName;
-            }
-            else
-            {
-                classNameShort = className;
-                memberNameShort = memberName;
-            }
             
-            string resMessage = $"{classNameShort}().{memberNameShort}: {message}";
+            string resMessage = $"{className}().{memberName}: {message}";
             
             Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
             
@@ -182,13 +228,13 @@ namespace NamPhuThuy.Common
 
         #endregion
 
-        #region Break
+        #region ✧ Break
 
         
         /// <summary>
         /// Breaks execution in the editor and logs a message
         /// </summary>
-        public static void LogBreak(string content, Color color = default, bool setBold = false,
+        public static void LogBreak(string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
             [CallerFilePath] string filePath = "")
@@ -198,12 +244,12 @@ namespace NamPhuThuy.Common
 
             string className = Path.GetFileNameWithoutExtension(filePath);
             string location = $"{className}.{memberName}()::{line}";
-            string message = $"[BREAK] {location} - {content}";
+            string finalMessage = $"[BREAK] {location} - {message}";
 
             if (color == default)
                 color = Color.red;
 
-            Debug.LogError(ColorizedText(message, color, setBold));
+            Debug.LogError(ColorizedText(finalMessage, color, setBold));
 
 #if UNITY_EDITOR
             Debug.Break();
@@ -213,34 +259,34 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Conditional break - only breaks if condition is true
         /// </summary>
-        public static void LogBreakIf(bool condition, string content, Color color = default, bool setBold = false,
+        public static void LogBreakIf(bool condition, string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
             [CallerFilePath] string filePath = "")
         {
             if (condition)
             {
-                LogBreak(content, color, setBold, line, memberName, filePath);
+                LogBreak(message, color, setBold, line, memberName, filePath);
             }
         }
 
         /// <summary>
         /// Assert with break - breaks if condition is false
         /// </summary>
-        public static void LogAssert(bool condition, string content, Color color = default, bool setBold = false,
+        public static void LogAssert(bool condition, string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
             [CallerFilePath] string filePath = "")
         {
             if (!condition)
             {
-                LogBreak($"ASSERTION FAILED: {content}", color, setBold, line, memberName, filePath);
+                LogBreak($"ASSERTION FAILED: {message}", color, setBold, line, memberName, filePath);
             }
         }
 
         #endregion
 
-        #region Try-catch 
+        #region ✧ Try-catch 
 
         /// <summary>
         /// Try-catch wrapper with logging
@@ -274,7 +320,7 @@ namespace NamPhuThuy.Common
 
         #endregion
 
-        #region Data Structure Logging
+        #region ✧ Data Structure Logging
 
         
         public static void LogDictionary(IDictionary dict, string title = "Dictionary", 
@@ -324,7 +370,7 @@ namespace NamPhuThuy.Common
 
         #endregion
 
-        #region Helper
+        #region ✧ Helper
 
         /// <summary>
         /// Get full hierarchy path of GameObject
