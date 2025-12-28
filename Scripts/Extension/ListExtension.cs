@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 namespace NamPhuThuy.Common
 {
-    
     public static class ListExtensions
     {
         #region Randomization
