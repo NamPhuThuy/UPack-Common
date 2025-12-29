@@ -117,6 +117,19 @@ namespace NamPhuThuy.Common
 
         return Color.HSVToRGB(h, s, v);
     }
+    
+    // ========================================================================
+    // HELPER: HEX CONVERTER
+    // Usage: ColorConst.FromHex("#FF0000")
+    // ========================================================================
+    public static Color FromHex(string hex)
+    {
+        if (ColorUtility.TryParseHtmlString(hex, out Color color))
+            return color;
+        
+        Debug.LogWarning($"[ColorConst] Invalid Hex Code: {hex}");
+        return Color.white;
+    }
 
     #region CONTRAST
     public static void GetRandomContrastingColorPair(out Color backgroundColor, out Color textColor)
