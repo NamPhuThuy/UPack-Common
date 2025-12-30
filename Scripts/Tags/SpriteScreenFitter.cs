@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -144,8 +143,6 @@ namespace NamPhuThuy.Common
         public void ScaleSpriteToScreen()
         {
             // DebugLogger.Log(context:this);
-            transform.DOKill(); // Kills all DOTween animations on this transform
-            
             if (!currentCamera.orthographic)
             {
                 Debug.LogWarning("Camera is not orthographic! This script is designed for orthographic cameras.");
