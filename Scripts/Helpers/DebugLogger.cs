@@ -156,21 +156,21 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Log only if condition is true
         /// </summary>
-        public static void LogIf(bool condition, string content, Color color = default, bool setBold = false)
+        public static void LogIf(bool condition, string message, Color color = default, bool setBold = false)
         {
             if (!enableLog)
                 return;
         
             if (condition)
             {
-                Log(message:content, color:color, setBold:setBold);
+                Log(message:message, color:color, setBold:setBold);
             }
         }
         
-        public static void LogWithFrame(string content, Color color = default, bool setBold = false)
+        public static void LogWithFrame(string message, Color color = default, bool setBold = false, Object context = null)
         {
             string frameInfo = $"[Frame {Time.frameCount}] ";
-            Debug.Log(ColorizedText($"{frameInfo} - {content}", color, setBold));
+            Debug.Log(ColorizedText($"{frameInfo} - {message}", color, setBold), context: context);
         }
 
         public static void LogFrog([CallerLineNumber] int line = 0
