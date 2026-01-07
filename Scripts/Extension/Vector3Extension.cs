@@ -176,5 +176,20 @@ namespace NamPhuThuy.Common
         {
             return ClosestPointOnLineSegment(p.x, p.y, p.z, a.x, a.y, a.z, b.x, b.y, b.z);
         }
+        
+        public static Vector3 ChangeX(this Vector3 currentValue, float value)
+        {
+            return new Vector3(value, currentValue.y, currentValue.z);
+        }
+
+        public static Vector3 ChangeY(this Vector3 currentValue, float value)
+        {
+            return new Vector3(currentValue.x, value, currentValue.z);
+        }
+
+        public static Vector3 ChangeZ(this Vector3 currentValue, float value)
+        {
+            return new Vector3(currentValue.x, currentValue.y, value);
+        }
     }
 }
