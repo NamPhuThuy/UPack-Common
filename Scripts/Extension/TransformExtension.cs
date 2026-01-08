@@ -274,14 +274,22 @@ namespace NamPhuThuy.Common
 
             return -1;
         }
-        
-        public static T[] GetComponentsArrayFromAllChildren<T>(this Transform parent) where T : Component
+
+        /// <summary>
+        /// Gets components of type T from this transform and all its children.
+        /// This is a more convenient wrapper for the built-in GetComponentsInChildren.
+        /// </summary>
+        /// <param name="parent">The parent transform to search from.</param>
+        /// <param name="includeInactive">Whether to include components on inactive GameObjects.</param>
+        /// <typeparam name="T">The type of component to find.</typeparam>
+        /// <returns>An array of components of type T found.</returns>
+        public static T[] GetComponentsFromAllChildren<T>(this Transform parent, bool includeInactive = true) where T : Component
         {
             List<T> components = new List<T>();
             GetComponentsFromAllChildrenRecursive(parent, components);
             return components.ToArray();
         }
-
+        
         private static void GetComponentsFromAllChildrenRecursive<T>(Transform parent, List<T> components) where T : Component
         {
             T component = parent.GetComponent<T>();
