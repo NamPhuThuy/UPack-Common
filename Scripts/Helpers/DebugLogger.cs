@@ -206,7 +206,7 @@ namespace NamPhuThuy.Common
             Color currentColor = color == default ? Color.cyan : color;
 
             
-            string resMessage = $"{className}().{memberName}: {message}";
+            string resMessage = $"{className}.{memberName}: {message}";
             
             Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
             

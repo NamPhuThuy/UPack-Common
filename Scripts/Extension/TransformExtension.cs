@@ -129,6 +129,26 @@ namespace NamPhuThuy.Common
 
         #region Find Object Helpers
 
+        public static T GetFirstComponentInChildren<T>(this Transform parent, bool checkParentToo = false) where T : Component
+        {
+            T component;
+            if (checkParentToo)
+            {
+                component = parent.GetComponent<T>();
+                if (component != null) 
+                    return component;
+            }
+
+            foreach (Transform child in parent)
+            {
+                component = GetFirstComponentInChildren<T>(child, true);
+                if (component != null)
+                    return component;
+            }
+
+            return null;
+        }
+
         public static List<GameObject> FindObjectsByNameContain(this Transform transform, string name)
         {
             List<GameObject> taggedGameObjects = new List<GameObject>();
