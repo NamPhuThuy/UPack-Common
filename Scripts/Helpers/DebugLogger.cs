@@ -25,13 +25,13 @@ Math/other: ∎ ■ ⬛ ⦿ ⧈ ⬚
 namespace NamPhuThuy.Common
 {
     /// <summary>
-    /// 
+    /// Add ENABLE_DEBUG_LOGGER in scripting symbols to use this class
     /// </summary>
     public static partial class DebugLogger
     {
         public static bool enableLog = true;
-        public static readonly Color defaultColor = Color.cyan;
-        public static readonly Color eventColor = Color.yellow;
+        public static readonly Color defaultColor = ColorConst.PastelCyan;
+        public static readonly Color eventColor = Color.lightYellow;
         
         [System.Flags]
         public enum LogTag
@@ -104,6 +104,7 @@ namespace NamPhuThuy.Common
         
         #region ✧ Log Error
 
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogError(string message, Color color = default, bool setBold = false, Object context = null)
         {
             if (!enableLog)
@@ -114,6 +115,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Log error only if condition is true
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogErrorIf(bool condition, string content, Color color = default, bool setBold = false)
         {
             if (!enableLog)
@@ -129,6 +131,7 @@ namespace NamPhuThuy.Common
 
         #region ✧ Log Warning
         
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogWarning(string message, Color color = default, bool setBold = false, Object context = null)
         {
             if (!enableLog)
@@ -140,6 +143,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Log warning only if condition is true
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogWarningIf(bool condition, string content, Color color = default, bool setBold = false)
         {
             if (!enableLog)
@@ -157,6 +161,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Log only if condition is true
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogIf(bool condition, string message, Color color = default, bool setBold = false)
         {
             if (!enableLog)
@@ -168,12 +173,14 @@ namespace NamPhuThuy.Common
             }
         }
         
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogWithFrame(string message, Color color = default, bool setBold = false, Object context = null)
         {
             string frameInfo = $"[Frame {Time.frameCount}] ";
             Debug.Log(ColorizedText($"{frameInfo} - {message}", color, setBold), context: context);
         }
 
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogFrog([CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
             , [CallerFilePath] string filePath = "", string message = "", Color color = default, Object context = null, bool setBold = false)
@@ -183,14 +190,14 @@ namespace NamPhuThuy.Common
             
             string className = Path.GetFileNameWithoutExtension(filePath);
 
-            Color currentColor = color == default ? Color.cyan : color;
+            Color currentColor = color == default ? ColorConst.PastelCyan : color;
             
             string resMessage = $"🐸{className}().{memberName}: {message}";
             
             Debug.Log(ColorizedText(resMessage, currentColor, setBold), context: context);
         }
         
-            
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void Log(
             [CallerLineNumber] int line = 0
             , [CallerMemberName] string memberName = ""
@@ -203,7 +210,7 @@ namespace NamPhuThuy.Common
             
             string className = Path.GetFileNameWithoutExtension(filePath);
 
-            Color currentColor = color == default ? Color.cyan : color;
+            Color currentColor = color == default ? ColorConst.PastelCyan : color;
 
             
             string resMessage = $"{className}.{memberName}: {message}";
@@ -215,13 +222,14 @@ namespace NamPhuThuy.Common
             Usage is simple: just put a LogCaller(); at any line you want. The compiler will pass in the 3 parameters for you.*/
         }
 
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogWithoutHeader(string message = "", Color color = default, Object context = null,
             bool setBold = false)
         {
             if (!enableLog)
                 return;
             
-            Color currentColor = color == default ? Color.cyan : color;
+            Color currentColor = color == default ? ColorConst.PastelCyan : color;
             Debug.Log(ColorizedText(message, currentColor, setBold), context: context);
         }
         
@@ -235,6 +243,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Breaks execution in the editor and logs a message
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogBreak(string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
@@ -248,7 +257,7 @@ namespace NamPhuThuy.Common
             string finalMessage = $"[BREAK] {location} - {message}";
 
             if (color == default)
-                color = Color.red;
+                color = Color.lightCoral;
 
             Debug.LogError(ColorizedText(finalMessage, color, setBold));
 
@@ -260,6 +269,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Conditional break - only breaks if condition is true
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogBreakIf(bool condition, string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
@@ -274,6 +284,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Assert with break - breaks if condition is false
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogAssert(bool condition, string message = "", Color color = default, bool setBold = false,
             [CallerLineNumber] int line = 0,
             [CallerMemberName] string memberName = "",
@@ -292,6 +303,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Try-catch wrapper with logging
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogTry(System.Action action, string context = "Unknown operation", Object contextObject = null)
         {
             try
@@ -307,6 +319,7 @@ namespace NamPhuThuy.Common
         /// <summary>
         /// Log exception with full details
         /// </summary>
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogException(System.Exception ex, string context = "", Object contextObject = null)
         {
             if (!enableLog)
@@ -316,14 +329,22 @@ namespace NamPhuThuy.Common
                 ? $"EXCEPTION: {ex.Message}\nStackTrace: {ex.StackTrace}" 
                 : $"EXCEPTION in {context}: {ex.Message}\nStackTrace: {ex.StackTrace}";
     
-            Debug.LogError(ColorizedText(message, Color.red, true), contextObject);
+            Debug.LogError(ColorizedText(message, Color.lightCoral, true), contextObject);
         }
 
         #endregion
 
         #region ✧ Data Structure Logging
-
         
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
+        public static void LogAsJson(object obj, string title = "", Color color = default, bool setBold = false, Object context = null)
+        {
+            string json = JsonUtility.ToJson(obj, true);
+            string message = string.IsNullOrEmpty(title) ? json : $"{title}:\n{json}";
+            LogWithoutHeader(message, color, context, setBold);
+        }
+
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogDictionary(IDictionary dict, string title = "Dictionary", 
             Color color = default, bool setBold = false, Object context = null)
         {
@@ -347,6 +368,7 @@ namespace NamPhuThuy.Common
             LogWithoutHeader(sb.ToString(), color, context, setBold);
         }
         
+        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGER")]
         public static void LogList(IList list, string title = "List", Color color = default, bool setBold = false, Object context = null)
         {
             if (!enableLog)
@@ -415,7 +437,7 @@ namespace NamPhuThuy.Common
         public static string ColorizedText(string content, Color color, bool setBold = false)
         {
             if (color == default)
-                color = Color.cyan;
+                color = ColorConst.PastelCyan;
             
             if (setBold)
                 return $"<b><color=#{ColorUtility.ToHtmlStringRGB(color)}>{content}</color></b>";

@@ -7,7 +7,6 @@ using UnityEditor;
 
 namespace NamPhuThuy.Common
 {
-
     public static class ColorConst
     {
         // ========================================================================
@@ -28,6 +27,9 @@ namespace NamPhuThuy.Common
     
         // Soft Blue / Sky
         public static readonly Color PastelBlue = new Color32(186, 225, 255, 255);
+        
+        // Soft Cyan / Aqua
+        public static readonly Color PastelCyan = new Color32(179, 255, 255, 255);
     
         // Soft Purple / Lavender
         public static readonly Color PastelPurple = new Color32(223, 186, 255, 255);
