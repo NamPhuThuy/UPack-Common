@@ -31,7 +31,7 @@ namespace NamPhuThuy.Common
     {
         public static bool enableLog = true;
         public static readonly Color defaultColor = ColorConst.PastelCyan;
-        public static readonly Color eventColor = Color.lightYellow;
+        public static readonly Color eventColor = ColorConst.PastelYellow;
         
         [System.Flags]
         public enum LogTag
@@ -257,7 +257,7 @@ namespace NamPhuThuy.Common
             string finalMessage = $"[BREAK] {location} - {message}";
 
             if (color == default)
-                color = Color.lightCoral;
+                color = ColorConst.PastelRed;
 
             Debug.LogError(ColorizedText(finalMessage, color, setBold));
 
@@ -329,7 +329,7 @@ namespace NamPhuThuy.Common
                 ? $"EXCEPTION: {ex.Message}\nStackTrace: {ex.StackTrace}" 
                 : $"EXCEPTION in {context}: {ex.Message}\nStackTrace: {ex.StackTrace}";
     
-            Debug.LogError(ColorizedText(message, Color.lightCoral, true), contextObject);
+            Debug.LogError(ColorizedText(message, ColorConst.PastelRed, true), contextObject);
         }
 
         #endregion
