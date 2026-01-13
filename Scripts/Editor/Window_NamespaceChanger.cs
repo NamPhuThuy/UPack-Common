@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace NamPhuThuy.Common
 {
@@ -132,8 +133,11 @@ namespace NamPhuThuy.Common
             string[] scriptFiles = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
             int filesChanged = 0;
 
-            string oldNamespaceDeclaration = $"namespace {_oldNamespace}";
-            string newNamespaceDeclaration = $"namespace {_newNamespace}";
+            // Regex to find an exact namespace declaration.
+            // It looks for "namespace [old_namespace]" followed by a space, newline, or opening brace.
+            // This prevents matching sub-namespaces (e.g., "My.Namespace.UI" when "My.Namespace" is the old one).
+            string pattern = @"(^\s*namespace\s+)" + Regex.Escape(_oldNamespace) + @"(?=\s*[\r\n{])";
+            string replacement = @"$1" + _newNamespace;
 
             // Filter out editor scripts to be safe
             var filteredScripts = scriptFiles.Where(p => !p.Replace("\\", "/").Contains("/Editor/")).ToArray();
@@ -142,10 +146,10 @@ namespace NamPhuThuy.Common
             {
                 string content = File.ReadAllText(filePath);
 
-                // Check if the file contains the old namespace
-                if (content.Contains(oldNamespaceDeclaration))
+                // Check if the file contains the exact old namespace declaration
+                if (Regex.IsMatch(content, pattern, RegexOptions.Multiline))
                 {
-                    string newContent = content.Replace(oldNamespaceDeclaration, newNamespaceDeclaration);
+                    string newContent = Regex.Replace(content, pattern, replacement, RegexOptions.Multiline);
                     File.WriteAllText(filePath, newContent);
                     filesChanged++;
                     Debug.Log($"Changed namespace in: {filePath}");
@@ -161,7 +165,7 @@ namespace NamPhuThuy.Common
             else
             {
                 EditorUtility.DisplayDialog("No Changes",
-                    $"No scripts with the namespace '{_oldNamespace}' were found in the target folder.", "OK");
+                    $"No scripts with the exact namespace '{_oldNamespace}' were found in the target folder.", "OK");
             }
         }
         #endregion
