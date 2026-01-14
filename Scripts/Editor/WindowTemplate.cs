@@ -64,8 +64,10 @@ namespace NamPhuThuy.Common
         }
         #endregion
 
-        #region Private Methods
-        private void InitializeStyles()
+        #region Initialization
+        
+        
+          private void InitializeStyles()
         {
             if (_centeredButtonStyle == null)
             {
@@ -160,6 +162,12 @@ namespace NamPhuThuy.Common
 
             GUILayout.EndHorizontal();
         }
+        
+        #endregion
+        
+        
+        #region Private Methods
+      
 
         /// <summary>
         /// Template: how to wrap an operation in a single Unity Re/Undo group.

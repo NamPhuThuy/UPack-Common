@@ -315,6 +315,22 @@ namespace NamPhuThuy.Common
         }
 
         #endregion
+        
+        #region Operations Helpers
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="divBy"></param>
+        /// <returns></returns>
+        public static int RoundDownToDiv(int value, int divBy)
+        {
+            if (divBy == 0) return value;
+            return value - (value % divBy);
+        }
+
+        #endregion
 
         #region Convert
 
