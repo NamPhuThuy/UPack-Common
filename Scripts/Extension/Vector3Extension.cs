@@ -6,6 +6,263 @@ namespace NamPhuThuy.Common
 {
     public static class Vector3Extension
     {
+        
+        #region Random Point Spawning
+
+        /// <summary>
+        /// Get random point in sphere around center
+        /// </summary>
+        public static Vector3 GetRandomPointInSphere(this Vector3 center, float radius)
+        {
+            return center + UnityEngine.Random.insideUnitSphere * radius;
+        }
+
+        /// <summary>
+        /// Get random point on sphere surface around center
+        /// </summary>
+        public static Vector3 GetRandomPointOnSphere(this Vector3 center, float radius)
+        {
+            return center + UnityEngine.Random.onUnitSphere * radius;
+        }
+
+        /// <summary>
+        /// Get random point in circle (2D, XY plane) around center
+        /// </summary>
+        /// <param name="center">Center position</param>
+        /// <param name="radius">Circle radius</param>
+        /// <param name="xBias">Bias on X axis: -1 (left) to 1 (right), 0 = no bias</param>
+        /// <param name="yBias">Bias on Y axis: -1 (down) to 1 (up), 0 = no bias</param>
+        public static Vector3 GetRandomPointInCircle(this Vector3 center, float radius, float xBias = 0f, float yBias = 0f)
+        {
+            // Generate random point
+            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle;
+            
+            // Apply bias using power function for smooth distribution
+            // Bias > 0: shift right/up, Bias < 0: shift left/down
+            if (Mathf.Abs(xBias) > 0.01f)
+            {
+                float sign = Mathf.Sign(randomPoint.x);
+                float power = 1f - xBias; // bias=1 -> power=0 (extreme), bias=0 -> power=1 (normal)
+                randomPoint.x = sign * Mathf.Pow(Mathf.Abs(randomPoint.x), Mathf.Max(0.1f, power));
+            }
+            
+            if (Mathf.Abs(yBias) > 0.01f)
+            {
+                float sign = Mathf.Sign(randomPoint.y);
+                float power = 1f - yBias;
+                randomPoint.y = sign * Mathf.Pow(Mathf.Abs(randomPoint.y), Mathf.Max(0.1f, power));
+            }
+            
+            randomPoint *= radius;
+            return new Vector3(center.x + randomPoint.x, center.y + randomPoint.y, center.z);
+        }
+
+        /// <summary>
+        /// Get random point on circle (2D, XY plane) around center
+        /// </summary>
+        public static Vector3 GetRandomPointOnCircle(this Vector3 center, float radius)
+        {
+            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle.normalized * radius;
+            return new Vector3(center.x + randomPoint.x, center.y + randomPoint.y, center.z);
+        }
+
+        /// <summary>
+        /// Get random point in horizontal circle (XZ plane) around center - for ground spawning
+        /// </summary>
+        public static Vector3 GetRandomPointInHorizontalCircle(this Vector3 center, float radius)
+        {
+            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * radius;
+            return new Vector3(center.x + randomPoint.x, center.y, center.z + randomPoint.y);
+        }
+
+        /// <summary>
+        /// Get random point on horizontal circle (XZ plane) around center
+        /// </summary>
+        public static Vector3 GetRandomPointOnHorizontalCircle(this Vector3 center, float radius)
+        {
+            float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            float x = center.x + radius * Mathf.Cos(angle);
+            float z = center.z + radius * Mathf.Sin(angle);
+            return new Vector3(x, center.y, z);
+        }
+
+        /// <summary>
+        /// Get random point in annulus (ring) - between minRadius and maxRadius
+        /// </summary>
+        public static Vector3 GetRandomPointInAnnulus(this Vector3 center, float minRadius, float maxRadius)
+        {
+            Vector2 randomDirection = UnityEngine.Random.insideUnitCircle.normalized;
+            float randomRadius = UnityEngine.Random.Range(minRadius, maxRadius);
+            return new Vector3(
+                center.x + randomDirection.x * randomRadius,
+                center.y,
+                center.z + randomDirection.y * randomRadius
+            );
+        }
+
+        /// <summary>
+        /// Get random point in box/cube around center
+        /// </summary>
+        public static Vector3 GetRandomPointInBox(this Vector3 center, Vector3 size)
+        {
+            float x = UnityEngine.Random.Range(center.x - size.x / 2, center.x + size.x / 2);
+            float y = UnityEngine.Random.Range(center.y - size.y / 2, center.y + size.y / 2);
+            float z = UnityEngine.Random.Range(center.z - size.z / 2, center.z + size.z / 2);
+            return new Vector3(x, y, z);
+        }
+
+        /// <summary>
+        /// Get random point in box with uniform size
+        /// </summary>
+        public static Vector3 GetRandomPointInBox(this Vector3 center, float size)
+        {
+            return GetRandomPointInBox(center, Vector3.one * size);
+        }
+
+        /// <summary>
+        /// Get multiple random points in sphere
+        /// </summary>
+        public static List<Vector3> GetRandomPointsInSphere(this Vector3 center, float radius, int count)
+        {
+            List<Vector3> points = new List<Vector3>(count);
+            for (int i = 0; i < count; i++)
+            {
+                points.Add(GetRandomPointInSphere(center, radius));
+            }
+            return points;
+        }
+
+        /// <summary>
+        /// Get multiple random points in circle with minimum distance between them
+        /// </summary>
+        public static List<Vector3> GetRandomPointsInCircleWithMinDistance(this Vector3 center, float radius, int count, float minDistance)
+        {
+            List<Vector3> points = new List<Vector3>();
+            int maxAttempts = count * 30; // Prevent infinite loop
+            int attempts = 0;
+
+            while (points.Count < count && attempts < maxAttempts)
+            {
+                Vector3 candidate = GetRandomPointInHorizontalCircle(center, radius);
+                
+                bool isValid = true;
+                foreach (Vector3 point in points)
+                {
+                    if (Vector3.Distance(candidate, point) < minDistance)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (isValid)
+                {
+                    points.Add(candidate);
+                }
+
+                attempts++;
+            }
+
+            return points;
+        }
+
+        /// <summary>
+        /// Get random point within cone direction
+        /// </summary>
+        public static Vector3 GetRandomPointInCone(this Vector3 origin, Vector3 direction, float distance, float angle)
+        {
+            Vector3 randomDir = Quaternion.AngleAxis(
+                UnityEngine.Random.Range(-angle, angle),
+                Vector3.up
+            ) * direction;
+
+            float randomDistance = UnityEngine.Random.Range(0f, distance);
+            return origin + randomDir.normalized * randomDistance;
+        }
+
+        /// <summary>
+        /// Get random point on navmesh near center (requires NavMesh)
+        /// </summary>
+        public static Vector3 GetRandomPointOnNavMesh(this Vector3 center, float radius)
+        {
+            #if UNITY_AI
+            Vector3 randomPoint = GetRandomPointInHorizontalCircle(center, radius);
+            UnityEngine.AI.NavMeshHit hit;
+            
+            if (UnityEngine.AI.NavMesh.SamplePosition(randomPoint, out hit, radius, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+            #endif
+            
+            return GetRandomPointInHorizontalCircle(center, radius);
+        }
+
+        /// <summary>
+        /// Get evenly distributed random points in circle (Poisson disk sampling)
+        /// </summary>
+        public static List<Vector3> GetPoissonDiskPoints(this Vector3 center, float radius, float minDistance, int samplesBeforeRejection = 30)
+        {
+            List<Vector3> points = new List<Vector3>();
+            List<Vector3> activeList = new List<Vector3>();
+
+            // Start with center point
+            Vector3 firstPoint = center;
+            points.Add(firstPoint);
+            activeList.Add(firstPoint);
+
+            while (activeList.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, activeList.Count);
+                Vector3 currentPoint = activeList[randomIndex];
+                bool foundValidPoint = false;
+
+                for (int i = 0; i < samplesBeforeRejection; i++)
+                {
+                    // Generate random point in annulus
+                    float randomAngle = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                    float randomRadius = UnityEngine.Random.Range(minDistance, minDistance * 2);
+                    
+                    Vector3 candidate = new Vector3(
+                        currentPoint.x + randomRadius * Mathf.Cos(randomAngle),
+                        currentPoint.y,
+                        currentPoint.z + randomRadius * Mathf.Sin(randomAngle)
+                    );
+
+                    // Check if within radius
+                    if (Vector3.Distance(center, candidate) > radius)
+                        continue;
+
+                    // Check minimum distance from all existing points
+                    bool isValid = true;
+                    foreach (Vector3 point in points)
+                    {
+                        if (Vector3.Distance(candidate, point) < minDistance)
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        points.Add(candidate);
+                        activeList.Add(candidate);
+                        foundValidPoint = true;
+                        break;
+                    }
+                }
+
+                if (!foundValidPoint)
+                {
+                    activeList.RemoveAt(randomIndex);
+                }
+            }
+
+            return points;
+        }
+
+        #endregion
         public static Vector3 GetRandomInRange(this Vector3 pos, float rangeX, float rangeY, float rangeZ)
         {
             float randX = UnityEngine.Random.Range(pos.x - rangeX, pos.x + rangeX);
