@@ -108,7 +108,7 @@ namespace NamPhuThuy.Common
         /// </summary>
         public static string GetVideoPath(string videoName, string extension = "mp4")
         {
-            return System.IO.Path.Combine(Application.streamingAssetsPath, "Videos", $"{videoName}.{extension}");
+            return System.IO.Path.Combine(Application.streamingAssetsPath, $"{videoName}.{extension}");
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ VideoHelper.LoadVideoFromStreamingAssets(
     onError: (errorMsg) =>
     {
         DebugLogger.LogError($"Failed to load video: {errorMsg}", context: this);
-        ActiveImage(); // Fallback to image
+        // Fallback to image
     },
     context: this
 );
