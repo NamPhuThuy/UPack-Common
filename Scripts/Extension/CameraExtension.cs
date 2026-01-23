@@ -15,6 +15,15 @@ namespace NamPhuThuy.Common
         {
             return GetCurrentRatio(matchType) / GetDefaultRatio(matchType, defaultScreen);
         }
+        
+        public static Vector2 GetScreenSizeWorld(this Camera camera)
+        {
+            float orthoSize = camera.orthographicSize;
+            float screenHeight = orthoSize * 2;
+            float screenWidth = screenHeight * camera.aspect;
+
+            return new Vector2(screenWidth, screenHeight);
+        }
 
         static float GetDefaultRatio(AutoSizeMatchType matchType, Vector2 defaultScreen)
         {
