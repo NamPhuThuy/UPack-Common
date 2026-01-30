@@ -16,6 +16,11 @@ namespace NamPhuThuy.Common
             return GetCurrentRatio(matchType) / GetDefaultRatio(matchType, defaultScreen);
         }
         
+        /// <summary>
+        /// Get the width and height in Unity units
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <returns></returns>
         public static Vector2 GetScreenSizeWorld(this Camera camera)
         {
             float orthoSize = camera.orthographicSize;
